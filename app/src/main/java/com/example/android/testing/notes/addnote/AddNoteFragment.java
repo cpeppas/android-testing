@@ -16,15 +16,6 @@
 
 package com.example.android.testing.notes.addnote;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
-import com.bumptech.glide.request.animation.GlideAnimation;
-import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
-import com.example.android.testing.notes.Injection;
-import com.example.android.testing.notes.R;
-import com.example.android.testing.notes.util.EspressoIdlingResource;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
@@ -45,7 +36,20 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
+import com.example.android.testing.notes.App;
+import com.example.android.testing.notes.R;
+import com.example.android.testing.notes.data.NotesRepository;
+import com.example.android.testing.notes.util.EspressoIdlingResource;
+import com.example.android.testing.notes.util.ImageFile;
+
 import java.io.IOException;
+
+import javax.inject.Inject;
 
 import static com.google.common.base.Preconditions.checkState;
 
@@ -69,15 +73,26 @@ public class AddNoteFragment extends Fragment implements AddNoteContract.View {
         return new AddNoteFragment();
     }
 
+    @Inject
+    NotesRepository mRepo;
+
+    @Inject
+    ImageFile mImageFile;
+
     public AddNoteFragment() {
         // Required empty public constructor
     }
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        ((App)(getActivity().getApplication())).component().inject(this);
+    }
+
+    @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mActionListener = new AddNotePresenter(Injection.provideNotesRepository(), this,
-                Injection.provideImageFile());
+        mActionListener = new AddNotePresenter(mRepo, this, mImageFile);
 
         FloatingActionButton fab =
                 (FloatingActionButton) getActivity().findViewById(R.id.fab_add_notes);

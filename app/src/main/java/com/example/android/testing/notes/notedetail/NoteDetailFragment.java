@@ -16,15 +16,6 @@
 
 package com.example.android.testing.notes.notedetail;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
-import com.bumptech.glide.request.animation.GlideAnimation;
-import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
-import com.example.android.testing.notes.Injection;
-import com.example.android.testing.notes.R;
-import com.example.android.testing.notes.util.EspressoIdlingResource;
-
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -33,6 +24,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
+import com.example.android.testing.notes.App;
+import com.example.android.testing.notes.R;
+import com.example.android.testing.notes.data.NotesRepository;
+import com.example.android.testing.notes.util.EspressoIdlingResource;
+
+import javax.inject.Inject;
 
 /**
  * Main UI for the note detail screen.
@@ -49,6 +52,9 @@ public class NoteDetailFragment extends Fragment implements NoteDetailContract.V
 
     private ImageView mDetailImage;
 
+    @Inject
+    NotesRepository mRepo;
+
     public static NoteDetailFragment newInstance(String noteId) {
         Bundle arguments = new Bundle();
         arguments.putString(ARGUMENT_NOTE_ID, noteId);
@@ -58,10 +64,15 @@ public class NoteDetailFragment extends Fragment implements NoteDetailContract.V
     }
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        ((App) (getActivity().getApplication())).component().inject(this);
+    }
+
+    @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mActionsListener = new NoteDetailPresenter(Injection.provideNotesRepository(),
-                this);
+        mActionsListener = new NoteDetailPresenter(mRepo, this);
     }
 
     @Nullable

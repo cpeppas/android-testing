@@ -16,12 +16,6 @@
 
 package com.example.android.testing.notes.notes;
 
-import com.example.android.testing.notes.Injection;
-import com.example.android.testing.notes.addnote.AddNoteActivity;
-import com.example.android.testing.notes.notedetail.NoteDetailActivity;
-import com.example.android.testing.notes.R;
-import com.example.android.testing.notes.data.Note;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -39,8 +33,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.android.testing.notes.App;
+import com.example.android.testing.notes.R;
+import com.example.android.testing.notes.addnote.AddNoteActivity;
+import com.example.android.testing.notes.data.Note;
+import com.example.android.testing.notes.data.NotesRepository;
+import com.example.android.testing.notes.notedetail.NoteDetailActivity;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -55,6 +58,9 @@ public class NotesFragment extends Fragment implements NotesContract.View {
 
     private NotesAdapter mListAdapter;
 
+    @Inject
+    NotesRepository mRepo;
+
     public NotesFragment() {
         // Requires empty public constructor
     }
@@ -67,6 +73,7 @@ public class NotesFragment extends Fragment implements NotesContract.View {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mListAdapter = new NotesAdapter(new ArrayList<Note>(0), mItemListener);
+        ((App) (getActivity().getApplication())).component().inject(this);
     }
 
     @Override
@@ -81,7 +88,7 @@ public class NotesFragment extends Fragment implements NotesContract.View {
 
         setRetainInstance(true);
 
-        mActionsListener = new NotesPresenter(Injection.provideNotesRepository(), this);
+        mActionsListener = new NotesPresenter(mRepo, this);
 
     }
 
@@ -126,7 +133,7 @@ public class NotesFragment extends Fragment implements NotesContract.View {
                 ContextCompat.getColor(getActivity(), R.color.colorPrimary),
                 ContextCompat.getColor(getActivity(), R.color.colorAccent),
                 ContextCompat.getColor(getActivity(), R.color.colorPrimaryDark));
-       swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 mActionsListener.loadNotes(true);
@@ -170,7 +177,7 @@ public class NotesFragment extends Fragment implements NotesContract.View {
 
     @Override
     public void showAddNote() {
-        Intent intent = new Intent(getContext(),AddNoteActivity.class);
+        Intent intent = new Intent(getContext(), AddNoteActivity.class);
         startActivityForResult(intent, REQUEST_ADD_NOTE);
     }
 
