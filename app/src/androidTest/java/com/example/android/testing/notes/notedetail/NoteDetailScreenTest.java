@@ -16,6 +16,13 @@
 
 package com.example.android.testing.notes.notedetail;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.support.test.espresso.Espresso;
+import android.support.test.rule.ActivityTestRule;
+import android.support.test.runner.AndroidJUnit4;
+import android.test.suitebuilder.annotation.LargeTest;
+
 import com.example.android.testing.notes.R;
 import com.example.android.testing.notes.data.FakeNotesServiceApiImpl;
 import com.example.android.testing.notes.data.Note;
@@ -25,14 +32,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import android.app.Activity;
-import android.content.Intent;
-import android.support.test.espresso.Espresso;
-import android.support.test.espresso.matcher.ViewMatchers;
-import android.support.test.rule.ActivityTestRule;
-import android.support.test.runner.AndroidJUnit4;
-import android.test.suitebuilder.annotation.LargeTest;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
@@ -62,12 +61,12 @@ public class NoteDetailScreenTest {
 
     /**
      * {@link ActivityTestRule} is a JUnit {@link Rule @Rule} to launch your activity under test.
-     *
-     * <p>
+     * <p/>
+     * <p/>
      * Rules are interceptors which are executed for each test method and are important building
      * blocks of Junit tests.
-     *
-     * <p>
+     * <p/>
+     * <p/>
      * Sometimes an {@link Activity} requires a custom start {@link Intent} to receive data
      * from the source Activity. ActivityTestRule has a feature which let's you lazily start the
      * Activity under test, so you can control the Intent that is used to start the target Activity.
@@ -80,8 +79,8 @@ public class NoteDetailScreenTest {
     /**
      * Setup your test fixture with a fake note id. The {@link NoteDetailActivity} is started with
      * a particular note id, which is then loaded from the service API.
-     *
-     * <p>
+     * <p/>
+     * <p/>
      * Note that this test runs hermetically and is fully isolated using a fake implementation of
      * the service API. This is a great way to make your tests more reliable and faster at the same
      * time, since they are isolated from any outside dependencies.

@@ -15,18 +15,18 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        createApplicationComponent(this);
+        mComponent = createApplicationComponent(this);
     }
 
-    protected void createApplicationComponent(App context) {
-        mComponent = DaggerApplicationComponent.builder()
+    protected ApplicationComponent createApplicationComponent(App context) {
+        return DaggerApplicationComponent.builder()
                 .androidModule(new AndroidModule(context))
                 .apiModule(new ApiModule())
                 .dataModule(new DataModule())
                 .build();
     }
 
-    public ApplicationComponent component(){
+    public ApplicationComponent component() {
         return mComponent;
     }
 }

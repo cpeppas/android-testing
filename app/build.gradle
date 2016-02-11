@@ -27,6 +27,7 @@ android {
     productFlavors {
         mock {
             applicationIdSuffix = ".mock"
+            testInstrumentationRunner 'com.example.android.testing.notes.MockTestRunner'
         }
         prod {
 
@@ -67,7 +68,7 @@ dependencies {
     // Dependency injection lib
     compile "com.google.dagger:dagger:$rootProject.daggerVersion"
     apt "com.google.dagger:dagger-compiler:$rootProject.daggerVersion"
-    provided "org.glassfish:javax.annotation:$rootProject.glassfishAnnotationVersion" // 10.0-b28 Required by Dagger2
+    provided "org.glassfish:javax.annotation:$rootProject.glassfishAnnotationVersion" //Required by Dagger2
 
     // Dependencies for local unit tests
     testCompile "junit:junit:$rootProject.ext.junitVersion"
@@ -75,6 +76,11 @@ dependencies {
     testCompile "org.hamcrest:hamcrest-all:$rootProject.ext.hamcrestVersion"
     testCompile "org.powermock:powermock-module-junit4:$rootProject.ext.powerMockito"
     testCompile "org.powermock:powermock-api-mockito:$rootProject.ext.powerMockito"
+
+    // Dependency injection lib for androidTests
+    androidTestApt "com.google.dagger:dagger-compiler:$rootProject.daggerVersion"
+    androidTestProvided "org.glassfish:javax.annotation:$rootProject.glassfishAnnotationVersion" //Required by Dagger2
+    androidTestCompile "com.google.dagger:dagger:$rootProject.daggerVersion"
 
     // Android Testing Support Library's runner and rules
     androidTestCompile "com.android.support.test:runner:$rootProject.ext.runnerVersion"

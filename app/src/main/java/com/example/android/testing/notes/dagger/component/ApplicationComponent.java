@@ -17,6 +17,8 @@ public interface ApplicationComponent {
     void inject(AddNoteFragment fragment);
     void inject(NoteDetailFragment fragment);
     void inject(NotesFragment fragment);
+
+
     // Exported for child-components.
     // Application application();
 }
