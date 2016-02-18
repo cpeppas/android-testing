@@ -36,8 +36,9 @@ import android.widget.TextView;
 import com.example.android.testing.notes.App;
 import com.example.android.testing.notes.R;
 import com.example.android.testing.notes.addnote.AddNoteActivity;
+import com.example.android.testing.notes.dagger.component.NotesComponent;
+import com.example.android.testing.notes.dagger.module.NotesModule;
 import com.example.android.testing.notes.data.Note;
-import com.example.android.testing.notes.data.NotesRepository;
 import com.example.android.testing.notes.notedetail.NoteDetailActivity;
 
 import java.util.ArrayList;
@@ -54,12 +55,11 @@ public class NotesFragment extends Fragment implements NotesContract.View {
 
     private static final int REQUEST_ADD_NOTE = 1;
 
-    private NotesContract.UserActionsListener mActionsListener;
+    @Inject
+    NotesContract.UserActionsListener mPresenter;
+    NotesComponent mComponent;
 
     private NotesAdapter mListAdapter;
-
-    @Inject
-    NotesRepository mRepo;
 
     public NotesFragment() {
         // Requires empty public constructor
@@ -73,23 +73,22 @@ public class NotesFragment extends Fragment implements NotesContract.View {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mListAdapter = new NotesAdapter(new ArrayList<Note>(0), mItemListener);
-        ((App) (getActivity().getApplication())).component().inject(this);
+        mComponent = ((App) (getActivity().getApplication()))
+                .component()
+                .plus(new NotesModule(this));
+        mComponent.inject(this);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        mActionsListener.loadNotes(false);
+        mPresenter.loadNotes(false);
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
         setRetainInstance(true);
-
-        mActionsListener = new NotesPresenter(mRepo, this);
-
     }
 
     @Override
@@ -122,7 +121,7 @@ public class NotesFragment extends Fragment implements NotesContract.View {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mActionsListener.addNewNote();
+                mPresenter.addNewNote();
             }
         });
 
@@ -136,10 +135,16 @@ public class NotesFragment extends Fragment implements NotesContract.View {
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                mActionsListener.loadNotes(true);
+                mPresenter.loadNotes(true);
             }
         });
         return root;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mComponent = null;
     }
 
     /**
@@ -148,7 +153,7 @@ public class NotesFragment extends Fragment implements NotesContract.View {
     NoteItemListener mItemListener = new NoteItemListener() {
         @Override
         public void onNoteClick(Note clickedNote) {
-            mActionsListener.openNoteDetails(clickedNote);
+            mPresenter.openNoteDetails(clickedNote);
         }
     };
 

@@ -43,9 +43,9 @@ import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
 import com.example.android.testing.notes.App;
 import com.example.android.testing.notes.R;
-import com.example.android.testing.notes.data.NotesRepository;
+import com.example.android.testing.notes.dagger.component.AddNoteComponent;
+import com.example.android.testing.notes.dagger.module.AddNoteModule;
 import com.example.android.testing.notes.util.EspressoIdlingResource;
-import com.example.android.testing.notes.util.ImageFile;
 
 import java.io.IOException;
 
@@ -61,23 +61,19 @@ public class AddNoteFragment extends Fragment implements AddNoteContract.View {
 
     public static final int REQUEST_CODE_IMAGE_CAPTURE = 0x1001;
 
-    private AddNoteContract.UserActionsListener mActionListener;
-
     private TextView mTitle;
 
     private TextView mDescription;
 
     private ImageView mImageThumbnail;
 
+    @Inject
+    AddNoteContract.UserActionsListener mPresenter;
+    AddNoteComponent mComponent;
+
     public static AddNoteFragment newInstance() {
         return new AddNoteFragment();
     }
-
-    @Inject
-    NotesRepository mRepo;
-
-    @Inject
-    ImageFile mImageFile;
 
     public AddNoteFragment() {
         // Required empty public constructor
@@ -86,13 +82,15 @@ public class AddNoteFragment extends Fragment implements AddNoteContract.View {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ((App)(getActivity().getApplication())).component().inject(this);
+        mComponent = ((App) (getActivity().getApplication()))
+                .component()
+                .plus(new AddNoteModule(this));
+        mComponent.inject(this);
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mActionListener = new AddNotePresenter(mRepo, this, mImageFile);
 
         FloatingActionButton fab =
                 (FloatingActionButton) getActivity().findViewById(R.id.fab_add_notes);
@@ -100,7 +98,7 @@ public class AddNoteFragment extends Fragment implements AddNoteContract.View {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mActionListener.saveNote(mTitle.getText().toString(),
+                mPresenter.saveNote(mTitle.getText().toString(),
                         mDescription.getText().toString());
             }
         });
@@ -125,7 +123,7 @@ public class AddNoteFragment extends Fragment implements AddNoteContract.View {
         switch (item.getItemId()) {
             case R.id.take_picture:
                 try {
-                    mActionListener.takePicture();
+                    mPresenter.takePicture();
                 } catch (IOException ioe) {
                     if (getView() != null) {
                         Snackbar.make(getView(), getString(R.string.take_picture_error),
@@ -141,6 +139,12 @@ public class AddNoteFragment extends Fragment implements AddNoteContract.View {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.fragment_addnote_options_menu_actions, menu);
         super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mComponent = null;
     }
 
     @Override
@@ -200,16 +204,16 @@ public class AddNoteFragment extends Fragment implements AddNoteContract.View {
 
     @Override
     public void setUserActionListener(AddNoteContract.UserActionsListener listener) {
-        mActionListener = listener;
+        mPresenter = listener;
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         // If an image is received, display it on the ImageView.
         if (REQUEST_CODE_IMAGE_CAPTURE == requestCode && Activity.RESULT_OK == resultCode) {
-            mActionListener.imageAvailable();
+            mPresenter.imageAvailable();
         } else {
-            mActionListener.imageCaptureFailed();
+            mPresenter.imageCaptureFailed();
         }
     }
 }

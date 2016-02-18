@@ -26,6 +26,8 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import javax.inject.Inject;
+
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
@@ -41,6 +43,7 @@ public class AddNotePresenter implements AddNoteContract.UserActionsListener {
     @NonNull
     private final ImageFile mImageFile;
 
+    @Inject
     public AddNotePresenter(@NonNull NotesRepository notesRepository,
                             @NonNull AddNoteContract.View addNoteView,
                             @NonNull ImageFile imageFile) {

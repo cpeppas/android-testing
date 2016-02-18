@@ -16,13 +16,15 @@
 
 package com.example.android.testing.notes.notes;
 
+import android.support.annotation.NonNull;
+
 import com.example.android.testing.notes.data.Note;
 import com.example.android.testing.notes.data.NotesRepository;
 import com.example.android.testing.notes.util.EspressoIdlingResource;
 
-import android.support.annotation.NonNull;
-
 import java.util.List;
+
+import javax.inject.Inject;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -36,6 +38,7 @@ public class NotesPresenter implements NotesContract.UserActionsListener {
     private final NotesRepository mNotesRepository;
     private final NotesContract.View mNotesView;
 
+    @Inject
     public NotesPresenter(
             @NonNull NotesRepository notesRepository, @NonNull NotesContract.View notesView) {
         mNotesRepository = checkNotNull(notesRepository, "notesRepository cannot be null");

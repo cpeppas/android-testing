@@ -22,6 +22,8 @@ import com.example.android.testing.notes.data.NotesRepository;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import javax.inject.Inject;
+
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
@@ -34,6 +36,7 @@ public class NoteDetailPresenter implements NoteDetailContract.UserActionsListen
 
     private final NoteDetailContract.View mNotesDetailView;
 
+    @Inject
     public NoteDetailPresenter(@NonNull NotesRepository notesRepository,
                                @NonNull NoteDetailContract.View noteDetailView) {
         mNotesRepository = checkNotNull(notesRepository, "notesRepository cannot be null!");

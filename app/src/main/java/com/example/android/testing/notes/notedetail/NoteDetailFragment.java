@@ -32,7 +32,8 @@ import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
 import com.example.android.testing.notes.App;
 import com.example.android.testing.notes.R;
-import com.example.android.testing.notes.data.NotesRepository;
+import com.example.android.testing.notes.dagger.component.NoteDetailComponent;
+import com.example.android.testing.notes.dagger.module.NoteDetailModule;
 import com.example.android.testing.notes.util.EspressoIdlingResource;
 
 import javax.inject.Inject;
@@ -44,16 +45,16 @@ public class NoteDetailFragment extends Fragment implements NoteDetailContract.V
 
     public static final String ARGUMENT_NOTE_ID = "NOTE_ID";
 
-    private NoteDetailContract.UserActionsListener mActionsListener;
-
     private TextView mDetailTitle;
 
     private TextView mDetailDescription;
 
     private ImageView mDetailImage;
 
+    NoteDetailComponent mComponent;
+
     @Inject
-    NotesRepository mRepo;
+    NoteDetailContract.UserActionsListener mPresenter;
 
     public static NoteDetailFragment newInstance(String noteId) {
         Bundle arguments = new Bundle();
@@ -66,13 +67,15 @@ public class NoteDetailFragment extends Fragment implements NoteDetailContract.V
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ((App) (getActivity().getApplication())).component().inject(this);
+        mComponent = ((App) (getActivity().getApplication()))
+                .component()
+                .plus(new NoteDetailModule(this));
+        mComponent.inject(this);
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mActionsListener = new NoteDetailPresenter(mRepo, this);
     }
 
     @Nullable
@@ -90,7 +93,13 @@ public class NoteDetailFragment extends Fragment implements NoteDetailContract.V
     public void onResume() {
         super.onResume();
         String noteId = getArguments().getString(ARGUMENT_NOTE_ID);
-        mActionsListener.openNote(noteId);
+        mPresenter.openNote(noteId);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mComponent = null;
     }
 
     @Override
