@@ -9,6 +9,12 @@ Check out branch `master` or any of our step branches `step-1-5` to start and fo
 
 Clone this repository, enter the top level directory and run <code>./gradlew tasks</code> to get an overview of all the tasks available for this project.
 
+### Extra
+
+The purpose of this fork is to replace manual dependency injection with Dagger2 implementation
+The dagger2 implementation exists in dagger branch  
+https://github.com/cpeppas/android-testing/tree/dagger
+
 ### License
 
 
