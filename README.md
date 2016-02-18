@@ -12,7 +12,7 @@ Clone this repository, enter the top level directory and run <code>./gradlew tas
 ### Extra
 
 The purpose of this fork is to replace manual dependency injection with Dagger2 implementation
-The dagger2 implementation exists in dagger branch  
+Check out branch `dagger` for this implementation
 https://github.com/cpeppas/android-testing/tree/dagger
 
 ### License

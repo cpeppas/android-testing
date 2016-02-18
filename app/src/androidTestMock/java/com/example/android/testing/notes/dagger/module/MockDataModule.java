@@ -14,7 +14,6 @@ import dagger.Provides;
 @Module
 public class MockDataModule {
 
-    //TODO: check if needed to split in two Modules
     @Provides
     @Singleton
     public NotesRepository provideNotesRepository(NotesServiceApi api) {
